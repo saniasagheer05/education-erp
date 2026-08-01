@@ -4,7 +4,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../theme/colors";
 
-export default function Header({ title, showSearch = true, searchPlaceholder = "Search by name, USN, or ID..." }) {
+export default function Header({
+  title,
+  showSearch = true,
+  searchPlaceholder = "Search by name, USN, or ID...",
+  searchValue,
+  onSearchChange,
+}) {
   const navigation = useNavigation();
 
   return (
@@ -40,6 +46,8 @@ export default function Header({ title, showSearch = true, searchPlaceholder = "
             style={styles.searchInput}
             placeholder={searchPlaceholder}
             placeholderTextColor={colors.placeholder}
+            value={searchValue}
+            onChangeText={onSearchChange}
           />
           <Ionicons name="options-outline" size={18} color={colors.primary} />
         </View>

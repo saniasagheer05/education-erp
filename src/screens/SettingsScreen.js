@@ -1,20 +1,57 @@
-import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import React, { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Header from "../components/Header";
 import { colors } from "../theme/colors";
+import { useAuth } from "../context/AuthContext";
 
 const SETTINGS_ITEMS = [
-  { icon: "person-outline", label: "Account Settings" },
-  { icon: "notifications-outline", label: "Notification Preferences" },
-  { icon: "lock-closed-outline", label: "Privacy & Security" },
-  { icon: "school-outline", label: "Institution Details" },
-  { icon: "help-circle-outline", label: "Help & Support" },
-  { icon: "log-out-outline", label: "Log Out" },
+  { key: "account", icon: "person-outline", label: "Account Settings" },
+  { key: "notifications", icon: "notifications-outline", label: "Notification Preferences" },
+  { key: "privacy", icon: "lock-closed-outline", label: "Privacy & Security" },
+  { key: "institution", icon: "school-outline", label: "Institution Details" },
+  { key: "help", icon: "help-circle-outline", label: "Help & Support" },
+  { key: "logout", icon: "log-out-outline", label: "Log Out" },
 ];
 
 export default function SettingsScreen() {
+  const { logout } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      // Clears the JWT from AsyncStorage and flips isAuthenticated to
+      // false in AuthContext, which makes RootNavigator switch back to
+      // AuthNavigator (AdminLoginScreen) automatically.
+      await logout();
+    } catch (error) {
+      Alert.alert("Error", "Could not log out cleanly. Please try again.");
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
+
+  const confirmLogout = () => {
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Log Out",
+        style: "destructive",
+        onPress: handleLogout,
+      },
+    ]);
+  };
+
+  const handleItemPress = (key) => {
+    if (key === "logout") {
+      confirmLogout();
+    }
+    // Other settings rows (account, notifications, privacy, institution,
+    // help) are placeholders for now — no screens exist for them yet.
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <Header title="Settings" showSearch={false} />
@@ -33,15 +70,32 @@ export default function SettingsScreen() {
         <View style={styles.card}>
           {SETTINGS_ITEMS.map((item, index) => (
             <TouchableOpacity
-              key={item.label}
+              key={item.key}
               style={[
                 styles.row,
                 index !== SETTINGS_ITEMS.length - 1 && styles.rowBorder,
               ]}
+              onPress={() => handleItemPress(item.key)}
+              disabled={item.key === "logout" && isLoggingOut}
             >
-              <Ionicons name={item.icon} size={19} color={colors.textSecondary} />
-              <Text style={styles.rowLabel}>{item.label}</Text>
-              <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              <Ionicons
+                name={item.icon}
+                size={19}
+                color={item.key === "logout" ? colors.danger : colors.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.rowLabel,
+                  item.key === "logout" && { color: colors.danger },
+                ]}
+              >
+                {item.label}
+              </Text>
+              {item.key === "logout" && isLoggingOut ? (
+                <ActivityIndicator size="small" color={colors.danger} />
+              ) : (
+                <Ionicons name="chevron-forward" size={16} color={colors.textMuted} />
+              )}
             </TouchableOpacity>
           ))}
         </View>

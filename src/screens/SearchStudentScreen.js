@@ -1,23 +1,55 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import Header from "../components/Header";
 import { colors } from "../theme/colors";
-import { mockStudents } from "../data/mockStudents";
+import { listStudents } from "../api/studentsApi";
+import { mapApiStudentToCard } from "../utils/mapStudent";
 import StudentCard from "../components/StudentCard";
 
 export default function SearchStudentScreen() {
   const navigation = useNavigation();
   const [query, setQuery] = useState("");
+  const [allStudents, setAllStudents] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const results = query
-    ? mockStudents.filter(
+  const loadStudents = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const data = await listStudents();
+      setAllStudents(data.map(mapApiStudentToCard));
+    } catch (err) {
+      setError(err.message || "Could not load students. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load once on mount...
+  useEffect(() => {
+    loadStudents();
+  }, [loadStudents]);
+
+  // ...and refresh every time this screen regains focus, so newly
+  // added/edited/transferred students show up without a manual reload.
+  useFocusEffect(
+    useCallback(() => {
+      loadStudents();
+    }, [loadStudents])
+  );
+
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const results = normalizedQuery
+    ? allStudents.filter(
         (s) =>
-          s.name.toLowerCase().includes(query.toLowerCase()) ||
-          s.usn.toLowerCase().includes(query.toLowerCase()) ||
-          s.libraryId.toLowerCase().includes(query.toLowerCase())
+          (s.name || "").toLowerCase().includes(normalizedQuery) ||
+          (s.usn || "").toLowerCase().includes(normalizedQuery) ||
+          (s.libraryId || "").toLowerCase().includes(normalizedQuery)
       )
     : [];
 
@@ -26,9 +58,20 @@ export default function SearchStudentScreen() {
       <Header
         title="Search Student"
         searchPlaceholder="Search by name, USN, or Library ID..."
+        searchValue={query}
+        onSearchChange={setQuery}
       />
       <View style={styles.body}>
-        {query === "" ? (
+        {isLoading ? (
+          <View style={styles.empty}>
+            <ActivityIndicator size="large" color={colors.primary} />
+          </View>
+        ) : error ? (
+          <View style={styles.empty}>
+            <Ionicons name="alert-circle-outline" size={40} color={colors.danger} />
+            <Text style={styles.emptyText}>{error}</Text>
+          </View>
+        ) : normalizedQuery === "" ? (
           <View style={styles.empty}>
             <Ionicons name="search-outline" size={40} color={colors.textMuted} />
             <Text style={styles.emptyText}>
@@ -38,12 +81,14 @@ export default function SearchStudentScreen() {
         ) : (
           <FlatList
             data={results}
-            keyExtractor={(item) => item.libraryId}
+            keyExtractor={(item) => String(item.id)}
             contentContainerStyle={{ padding: 16 }}
             renderItem={({ item }) => (
               <StudentCard
                 student={item}
-                onPress={() => navigation.navigate("StudentDetail", { student: item })}
+                onPress={() =>
+                  navigation.navigate("StudentDetail", { studentId: item.id, student: item })
+                }
               />
             )}
             ListEmptyComponent={

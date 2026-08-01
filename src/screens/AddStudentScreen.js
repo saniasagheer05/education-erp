@@ -7,12 +7,16 @@ import {
   TextInput,
   TouchableOpacity,
   Platform,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { colors } from "../theme/colors";
+import { getToken } from "../utils/authStorage";
+import { API_BASE_URL } from "../config/apiConfig";
+
 
 function FieldLabel({ children }) {
   return <Text style={styles.fieldLabel}>{children}</Text>;
@@ -78,6 +82,69 @@ export default function AddStudentScreen() {
   });
 
   const setField = (key) => (val) => setForm((prev) => ({ ...prev, [key]: val }));
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = async () => {
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const token = await getToken();
+
+      if (!token) {
+        Alert.alert(
+          "Not Logged In",
+          "Your admin session was not found. Please log in again."
+        );
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/admin/students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          libraryId: form.libraryId,
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: "Student@123",
+          department: form.department,
+          semester: Number(form.semester),
+          section: form.section,
+          academicYear: form.academicYear,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        const errorMessage =
+          (result.errors && result.errors.join("\n")) ||
+          result.message ||
+          "Failed to save student record.";
+        Alert.alert("Save Failed", errorMessage);
+        return;
+      }
+
+      Alert.alert("Success", "Student record saved successfully.", [
+        {
+          text: "OK",
+          onPress: () => navigation.goBack(),
+        },
+      ]);
+    } catch (error) {
+      Alert.alert(
+        "Save Failed",
+        "Could not connect to the server. Please try again."
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
@@ -271,8 +338,8 @@ export default function AddStudentScreen() {
         <TouchableOpacity style={styles.saveContinueBtn}>
           <Text style={styles.saveContinueText}>Save & Continue</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveBtn}>
-          <Text style={styles.saveText}>Save Student Record</Text>
+        <TouchableOpacity style={styles.saveBtn} onPress={handleSave} disabled={isSaving}>
+          <Text style={styles.saveText}>{isSaving ? "Saving..." : "Save Student Record"}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
