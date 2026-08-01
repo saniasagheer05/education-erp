@@ -1,0 +1,18 @@
+// utils/generateToken.js
+// Wraps jsonwebtoken to produce a signed JWT carrying the user's id and role.
+
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
+
+/**
+ * Generate a signed JWT for a student or admin.
+ * @param {Object} payload - e.g. { id, role, libraryId } or { id, role, email }
+ * @returns {string} signed JWT
+ */
+const generateToken = (payload) => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  });
+};
+
+module.exports = generateToken;
