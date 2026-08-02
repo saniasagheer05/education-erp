@@ -14,6 +14,9 @@ const TAB_MENU_ITEMS = [
 const STANDALONE_MENU_ITEMS = [
   { key: "ImportStudents", label: "Import Students", icon: "person-add-outline" },
   { key: "TransferStudent", label: "Transfer Student", icon: "swap-horizontal-outline" },
+  { key: "Attendance", label: "Attendance", icon: "checkbox-outline" },
+  { key: "Fees", label: "Fees", icon: "cash-outline" },
+  { key: "Timetable", label: "Timetable", icon: "calendar-outline" },
   { key: "ExportStudentData", label: "Export Student Data", icon: "download-outline" },
 ];
 

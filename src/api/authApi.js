@@ -1,4 +1,3 @@
-
 import { API_BASE_URL } from "../config/apiConfig";
 
 const MAX_ATTEMPTS = 3;

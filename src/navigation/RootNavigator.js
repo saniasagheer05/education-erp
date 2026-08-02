@@ -5,6 +5,9 @@ import BottomTabs from "./BottomTabs";
 import ImportStudentsScreen from "../screens/ImportStudentsScreen";
 import TransferStudentScreen from "../screens/TransferStudentScreen";
 import ExportStudentDataScreen from "../screens/ExportStudentDataScreen";
+import AttendanceScreen from "../screens/AttendanceScreen";
+import FeesScreen from "../screens/FeesScreen";
+import TimetableScreen from "../screens/TimetableScreen";
 import AuthNavigator from "./AuthNavigator";
 import SidebarDrawerContent from "../components/SidebarDrawerContent";
 import { colors } from "../theme/colors";
@@ -28,6 +31,9 @@ function AppDrawer() {
       <Drawer.Screen name="ImportStudents" component={ImportStudentsScreen} />
       <Drawer.Screen name="TransferStudent" component={TransferStudentScreen} />
       <Drawer.Screen name="ExportStudentData" component={ExportStudentDataScreen} />
+      <Drawer.Screen name="Attendance" component={AttendanceScreen} />
+      <Drawer.Screen name="Fees" component={FeesScreen} />
+      <Drawer.Screen name="Timetable" component={TimetableScreen} />
     </Drawer.Navigator>
   );
 }

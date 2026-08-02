@@ -38,7 +38,6 @@ export function AuthProvider({ children }) {
       throw new Error("login() called without a token");
     }
     await saveToken(token);
-    console.log('SETTING AUTH TRUE');
     setIsAuthenticated(true);
   }, []);
 

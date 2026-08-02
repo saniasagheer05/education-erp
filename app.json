@@ -8,22 +8,18 @@
     "splash": {
       "backgroundColor": "#FFFFFF"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro"
-    },
-    "plugins": [
-      "expo-font"
-    ]
+    }
   }
 }

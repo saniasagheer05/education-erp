@@ -17,7 +17,6 @@ import { colors } from "../theme/colors";
 import { getToken } from "../utils/authStorage";
 import { API_BASE_URL } from "../config/apiConfig";
 
-
 function FieldLabel({ children }) {
   return <Text style={styles.fieldLabel}>{children}</Text>;
 }
