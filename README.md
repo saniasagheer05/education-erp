@@ -212,7 +212,7 @@ Five relational tables — `admins`, `students`, `attendance`, `fees`, `timetabl
 
 | Login | Student Registry | Add Student | Bulk Import |
 |---|---|---|---|
-| _screenshot_ | _screenshot_ | _screenshot_ | _screenshot_ |
+| ![image alt](https://github.com/saniasagheer05/education-erp/blob/d55c5eba2e1dd226e45221c80bb91ae40b15e95a/Screenshot_1785595664.png0)| _screenshot_ | _screenshot_ | _screenshot_ |
 
 ---
 
