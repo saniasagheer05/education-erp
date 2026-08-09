@@ -71,6 +71,7 @@ Most student CRUD demos stop at "form submits to a database." This one goes furt
                                                           │     timetable        │
                                                           └──────────────────────┘
 ```
+|![image alt](https://github.com/saniasagheer05/education-erp/blob/e7ea67ddd6ebfcdeff817b578b29299282e505d3/education_erp_pipeline.png)|
 
 ---
 
