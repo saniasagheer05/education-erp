@@ -1,23 +1,103 @@
-# SVCE ERP
+<div align="center">
 
-**A full-stack College Management System** — React Native (Expo) admin app backed by a Node.js/Express REST API and PostgreSQL, built for **Sri Venkateshwara College of Engineering**.
+# 🎓 SVCE ERP
 
-Handles the day-to-day work of a registrar's office: registering students, searching records, bulk-admitting students via CSV, transferring students between departments, and managing all of it behind real JWT-authenticated, role-based APIs — not a mocked prototype.
+### Full-Stack College Management System
+
+**Real auth. Real relational schema. Real bulk operations. Not a mocked prototype.**
+
+[![React Native](https://img.shields.io/badge/React%20Native-Expo%20SDK%2051-61DAFB?logo=react)](https://expo.dev)
+[![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)](https://nodejs.org)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Raw%20SQL-4169E1?logo=postgresql)](https://www.postgresql.org)
+[![JWT](https://img.shields.io/badge/Auth-JWT%20%2B%20bcrypt-000000?logo=jsonwebtokens)](https://jwt.io)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+[Screenshots](#-screenshots) · [Getting Started](#-getting-started) · [API Reference](#-api-overview) · [Report Bug](../../issues)
+
+</div>
 
 ---
 
-## Why this project
+## 📖 Overview
+
+**SVCE ERP** is a React Native (Expo) admin app backed by a Node.js/Express REST API and PostgreSQL, built for **Sri Venkateshwara College of Engineering**. It handles the actual day-to-day work of a registrar's office: registering students, searching records, bulk-admitting students via CSV, and transferring students between departments — all behind real JWT-authenticated, role-based APIs.
+
+### Why this project
 
 Most student CRUD demos stop at "form submits to a database." This one goes further:
 
-- **Real auth**, not a bypass — JWT-based admin login, bcrypt-hashed passwords, protected routes with role middleware.
-- **Real relational schema** — foreign keys, `CHECK` constraints, a generated column (`due_amount`), auto-updating `updated_at` triggers.
-- **Bulk operations** — CSV parsing and row-level validation for admitting dozens of students at once, with per-row success/failure reporting.
-- **Cross-platform networking handled properly** — a shared, platform-aware API config instead of a hardcoded `localhost` that silently breaks on Android emulators.
+- 🔐 **Real auth**, not a bypass — JWT-based admin login, bcrypt-hashed passwords, protected routes with role middleware
+- 🗄️ **Real relational schema** — foreign keys, `CHECK` constraints, a generated column (`due_amount`), auto-updating `updated_at` triggers
+- 📊 **Bulk operations** — CSV parsing and row-level validation for admitting dozens of students at once, with per-row success/failure reporting
+- 🌐 **Cross-platform networking handled properly** — a shared, platform-aware API config instead of a hardcoded `localhost` that silently breaks on Android emulators
 
 ---
 
-## Tech Stack
+## ✨ Features
+
+### Admin App (React Native / Expo)
+- JWT-based admin login with persistent sessions (AsyncStorage) and clean logout
+- **Student Registry** — live list pulled from PostgreSQL, filterable by status
+- **Add Student** — full registration form (Library ID issued at admission; USN assigned later in the workflow, matching real institutional process)
+- **Search Student** — real-time search across name, USN, and Library ID against live backend data
+- **Bulk Student Admission** — CSV file picker, client-side validation, then bulk import via the API with a per-row success/failure summary
+- **Transfer Student** — look up a student by Library ID and move them between departments
+- Dashboard, Export, and Settings screens
+
+### Backend API (Node.js / Express / PostgreSQL)
+- Dual authentication: **students** (Library ID + password) and **admins** (email + password)
+- Role-based route protection (`requireAdmin` / `requireStudent` middleware)
+- Student self-service endpoints: profile, attendance (with per-subject % summary), fees, timetable
+- Admin management endpoints: create/list/update students, mark attendance, manage fees, manage timetable
+- Centralized error handling that translates PostgreSQL error codes (unique/foreign-key/check violations) into clean JSON responses
+- Request validation on every write endpoint
+
+---
+
+## 📱 Screenshots
+
+| Login | Dashboard | Student Registry | Add Student |
+| ----- | --------- | ----------------- | ------------ |
+| ![Admin login screen](https://github.com/saniasagheer05/education-erp/blob/e7d98ed3bb1875f73bf1b1b3a8a021bf829028cb/Screenshot_1785595664.png) | ![Dashboard overview](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576231.png) | ![Student registry list](https://github.com/saniasagheer05/education-erp/blob/a0c99c30d9f344b876ad212a86c8b8c1884073d7/Screenshot_1785576277.png) | ![Add student form](https://github.com/saniasagheer05/education-erp/blob/0bb00f04da2ec06e4a7f436a1358e58190df342f/Screenshot_1785576398.png) |
+
+| Bulk Import | Transfer Student | Export Student Records |
+| ------------ | ------------------ | ------------------------ |
+| ![Bulk student import via CSV](https://github.com/saniasagheer05/education-erp/blob/0bb00f04da2ec06e4a7f436a1358e58190df342f/Screenshot_1785576243.png) | ![Transfer student between departments](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576251.png) | ![Export student records](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576257.png) |
+
+---
+
+## 🏗️ Architecture
+
+```mermaid
+flowchart LR
+    subgraph Mobile["📱 React Native (Expo)"]
+        UI[Admin Mobile App]
+        Ctx[AuthContext +<br/>AsyncStorage]
+        UI --> Ctx
+    end
+
+    Ctx -- HTTPS / JSON --> API
+
+    subgraph Backend["🖥️ Express REST API"]
+        API[Routes] --> MW[JWT + Role<br/>Middleware]
+        MW --> Ctrl[Controllers]
+        Ctrl --> Err[Centralized<br/>Error Handler]
+    end
+
+    Ctrl -- raw SQL via pg --> DB
+
+    subgraph Database["🗄️ PostgreSQL"]
+        DB[(students · admins<br/>attendance · fees<br/>timetable)]
+    end
+
+    style Mobile fill:#e8f5e9,stroke:#2e7d32
+    style Backend fill:#e3f2fd,stroke:#1565c0
+    style Database fill:#fff3e0,stroke:#e65100
+```
+
+---
+
+## 🛠️ Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -32,69 +112,26 @@ Most student CRUD demos stop at "form submits to a database." This one goes furt
 
 ---
 
-## Features
-
-### Admin App (React Native / Expo)
-- JWT-based admin login with persistent sessions (AsyncStorage) and clean logout
-- Student Registry — live list pulled from PostgreSQL, filterable by status
-- Add Student — full registration form (Library ID issued at admission; USN assigned later in the workflow, matching real institutional process)
-- Student Detail view
-- **Search Student** — real-time search across name, USN, and Library ID against live backend data
-- **Bulk Student Admission** — CSV file picker, client-side validation (missing fields, bad types), then bulk import via the API with a per-row success/failure summary
-- **Transfer Student** — look up a student by Library ID and move them between departments
-- Dashboard, Export, and Settings screens
-
-### Backend API (Node.js / Express / PostgreSQL)
-- Dual authentication: **students** (Library ID + password) and **admins** (email + password)
-- Role-based route protection (`requireAdmin` / `requireStudent` middleware)
-- Student self-service endpoints: profile, attendance (with per-subject % summary), fees, timetable
-- Admin management endpoints: create/list/update students, mark attendance, manage fees, manage timetable
-- Centralized error handling that translates PostgreSQL error codes (unique/foreign-key/check violations) into clean JSON responses
-- Request validation on every write endpoint
-
----
-
-## Architecture
+## 📂 Project Structure
 
 ```
-┌─────────────────────────┐        HTTPS/JSON        ┌──────────────────────────┐
-│   React Native (Expo)   │ ────────────────────────▶ │   Express REST API      │
-│   Admin mobile app      │ ◀──────────────────────── │   JWT + bcrypt + CORS   │
-└─────────────────────────┘                            └────────────┬─────────────┘
-                                                                     │
-                                                                     │ pg (raw SQL)
-                                                                     ▼
-                                                          ┌──────────────────────┐
-                                                          │     PostgreSQL       │
-                                                          │  students / admins   │
-                                                          │ attendance / fees /  │
-                                                          │     timetable        │
-                                                          └──────────────────────┘
-```
-|![image alt](https://github.com/saniasagheer05/education-erp/blob/e7ea67ddd6ebfcdeff817b578b29299282e505d3/education_erp_pipeline.png)|
-
----
-
-## Project Structure
-
-```
-svce-erp/                          # Root (suggested repo layout)
+svce-erp/
 ├── frontend/                      # React Native (Expo) app
 │   ├── App.js
 │   ├── app.json
 │   ├── package.json
 │   └── src/
-│       ├── api/                   # authApi.js, studentsApi.js (fetch + JWT)
-│       ├── components/            # Header, StudentCard, StatusBadge, SidebarDrawerContent
-│       ├── config/                # apiConfig.js — platform-aware API base URL
+│       ├── api/                    # authApi.js, studentsApi.js (fetch + JWT)
+│       ├── components/             # Header, StudentCard, StatusBadge, SidebarDrawerContent
+│       ├── config/                 # apiConfig.js — platform-aware API base URL
 │       ├── context/                # AuthContext.js — single source of truth for auth state
-│       ├── data/                   # mockStudents.js (legacy fixtures, no longer used by live screens)
+│       ├── data/                   # mockStudents.js (legacy fixtures, no longer used)
 │       ├── navigation/             # RootNavigator, AuthNavigator, BottomTabs, StudentRegistryStack
-│       ├── screens/                 # Dashboard, StudentRegistry, AddStudent, StudentDetail,
-│       │                            # SearchStudent, ImportStudents, TransferStudent, Settings,
-│       │                            # AdminLogin, Tasks, ExportStudentData
-│       ├── theme/                   # colors.js, typography.js
-│       └── utils/                   # authStorage.js (AsyncStorage), mapStudent.js
+│       ├── screens/                # Dashboard, StudentRegistry, AddStudent, StudentDetail,
+│       │                           # SearchStudent, ImportStudents, TransferStudent, Settings,
+│       │                           # AdminLogin, Tasks, ExportStudentData
+│       ├── theme/                  # colors.js, typography.js
+│       └── utils/                  # authStorage.js (AsyncStorage), mapStudent.js
 │
 └── backend/                       # Node.js / Express / PostgreSQL API
     ├── server.js
@@ -107,13 +144,13 @@ svce-erp/                          # Root (suggested repo layout)
     ├── models/                     # Student, Admin, Attendance, Fee, Timetable
     ├── utils/                      # generateToken, asyncHandler, validators
     └── database/
-        ├── schema.sql               # Full DDL: tables, constraints, triggers
-        └── seed.sql                  # 5 students, 2 admins, attendance, fees, timetable
+        ├── schema.sql              # Full DDL: tables, constraints, triggers
+        └── seed.sql                # 5 students, 2 admins, attendance, fees, timetable
 ```
 
 ---
 
-## Getting Started
+## 🚀 Getting Started
 
 ### Prerequisites
 - Node.js v18+
@@ -165,7 +202,7 @@ Run this once per emulator session (it resets on emulator restart), then open th
 
 ---
 
-## API Overview
+## 🔌 API Overview
 
 **Auth**
 | Method | Endpoint | Description |
@@ -199,26 +236,20 @@ Full request/response examples are in [`backend/README.md`](./backend/README.md)
 
 ---
 
-## Database Schema
+## 🗄️ Database Schema
 
 Five relational tables — `admins`, `students`, `attendance`, `fees`, `timetable` — with foreign keys, `CHECK` constraints, and a `fees.due_amount` **generated column** (`total_amount - paid_amount`). See [`backend/database/schema.sql`](./backend/database/schema.sql) for the full DDL.
 
 ---
 
----
-
-## Screenshots
-
-*(Add screenshots/GIFs here before publishing — a login → add student → search → transfer flow works well as a demo reel.)*
-
-|Login| Dashboard| Student Registry | Add Student | 
-|---|---|---|---|
-|![image alt](https://github.com/saniasagheer05/education-erp/blob/e7d98ed3bb1875f73bf1b1b3a8a021bf829028cb/Screenshot_1785595664.png)|![image alt](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576231.png)| ![image alt](https://github.com/saniasagheer05/education-erp/blob/a0c99c30d9f344b876ad212a86c8b8c1884073d7/Screenshot_1785576277.png)| ![image alt](https://github.com/saniasagheer05/education-erp/blob/0bb00f04da2ec06e4a7f436a1358e58190df342f/Screenshot_1785576398.png) 
-|**Bulk Import** |**Transfer Student**|**Export Student Records**|
-|![image alt](https://github.com/saniasagheer05/education-erp/blob/0bb00f04da2ec06e4a7f436a1358e58190df342f/Screenshot_1785576243.png) |![image alt](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576251.png)|![image alt](https://github.com/saniasagheer05/education-erp/blob/1bcea08a4670089a30f1a31324e0e048738d91b7/Screenshot_1785576257.png)|
-
----
-
-## License
+## 📄 License
 
 MIT — free to use, fork, and adapt for learning or portfolio purposes.
+
+---
+
+<div align="center">
+
+Built by **Sania Sagheer**
+
+</div>
