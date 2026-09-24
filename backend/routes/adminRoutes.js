@@ -7,6 +7,8 @@ const {
   listStudents,
   getStudentById,
   addAttendance,
+  addBulkAttendance,
+  getLowAttendance,
   updateAttendance,
   addFees,
   updateFees,
@@ -32,6 +34,12 @@ router.get("/students/:id", getStudentById);
 router.put("/students/:id", updateStudent);
 
 // ---------- Attendance ----------
+// @route  POST /api/admin/attendance/bulk
+router.post("/attendance/bulk", addBulkAttendance);
+
+// @route  GET /api/admin/attendance/low
+router.get("/attendance/low", getLowAttendance);
+
 // @route  POST /api/admin/attendance
 router.post("/attendance", addAttendance);
 

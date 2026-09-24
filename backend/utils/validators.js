@@ -86,6 +86,36 @@ const validateAttendance = (body) => {
 };
 
 /**
+ * Validate payload for bulk attendance marking.
+ */
+const validateBulkAttendance = (body) => {
+  const errors = [];
+  const validStatuses = ["Present", "Absent", "Late", "Excused"];
+
+  if (isEmpty(body.subject)) errors.push("subject is required");
+  if (isEmpty(body.attendanceDate)) errors.push("attendanceDate is required");
+  if (!Array.isArray(body.records) || body.records.length === 0) {
+    errors.push("records must be a non-empty array of student attendance items");
+  } else {
+    for (let i = 0; i < body.records.length; i++) {
+      const r = body.records[i];
+      if (isEmpty(r.studentId)) {
+        errors.push(`Record ${i + 1}: studentId is required`);
+      }
+      if (isEmpty(r.status)) {
+        errors.push(`Record ${i + 1}: status is required`);
+      } else if (!validStatuses.includes(r.status)) {
+        errors.push(
+          `Record ${i + 1}: status must be one of: ${validStatuses.join(", ")}`
+        );
+      }
+    }
+  }
+
+  return errors;
+};
+
+/**
  * Validate payload for adding/updating fee records.
  */
 const validateFees = (body) => {
@@ -152,6 +182,7 @@ module.exports = {
   validateAdminLogin,
   validateNewStudent,
   validateAttendance,
+  validateBulkAttendance,
   validateFees,
   validateTimetable,
 };

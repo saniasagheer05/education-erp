@@ -22,7 +22,7 @@ import {
 
 const STATUS_OPTIONS = ["Present", "Absent", "Late", "Excused"];
 
-export default function AttendanceScreen() {
+export default function AttendanceScreen({ navigation }) {
   const [libraryId, setLibraryId] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [student, setStudent] = useState(null);
@@ -132,9 +132,27 @@ export default function AttendanceScreen() {
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <Header title="Attendance" showSearch={false} />
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.quickNavRow}>
+          <TouchableOpacity
+            style={styles.quickNavBtn}
+            onPress={() => navigation?.navigate("MarkAttendance")}
+          >
+            <Ionicons name="checkmark-done-circle-outline" size={16} color={colors.primary} />
+            <Text style={styles.quickNavBtnText}>Mark Class Attendance</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.quickNavBtn, { backgroundColor: colors.dangerBg, borderColor: colors.danger }]}
+            onPress={() => navigation?.navigate("LowAttendance")}
+          >
+            <Ionicons name="alert-circle-outline" size={16} color={colors.danger} />
+            <Text style={[styles.quickNavBtnText, { color: colors.danger }]}>Low Attendance</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={styles.heading}>Manage Attendance</Text>
         <Text style={styles.subheading}>
-          Find a student by Library ID to view and update their attendance.
+          Find a student by Library ID to view and update their individual attendance.
         </Text>
 
         <View style={styles.searchRow}>
@@ -381,4 +399,27 @@ const styles = StyleSheet.create({
   recordDate: { fontSize: 11, color: colors.textSecondary, marginTop: 2 },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 6 },
   badgeText: { fontSize: 11, fontWeight: "700" },
+  quickNavRow: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 16,
+  },
+  quickNavBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colors.primaryLight,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
+    gap: 6,
+  },
+  quickNavBtnText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: colors.primary,
+  },
 });

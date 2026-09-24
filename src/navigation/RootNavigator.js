@@ -6,6 +6,8 @@ import ImportStudentsScreen from "../screens/ImportStudentsScreen";
 import TransferStudentScreen from "../screens/TransferStudentScreen";
 import ExportStudentDataScreen from "../screens/ExportStudentDataScreen";
 import AttendanceScreen from "../screens/AttendanceScreen";
+import MarkAttendanceScreen from "../screens/MarkAttendanceScreen";
+import LowAttendanceScreen from "../screens/LowAttendanceScreen";
 import FeesScreen from "../screens/FeesScreen";
 import TimetableScreen from "../screens/TimetableScreen";
 import AuthNavigator from "./AuthNavigator";
@@ -29,10 +31,12 @@ function AppDrawer() {
       drawerContent={(props) => <SidebarDrawerContent {...props} />}
     >
       <Drawer.Screen name="MainTabs" component={BottomTabs} />
+      <Drawer.Screen name="MarkAttendance" component={MarkAttendanceScreen} />
+      <Drawer.Screen name="LowAttendance" component={LowAttendanceScreen} />
+      <Drawer.Screen name="Attendance" component={AttendanceScreen} />
       <Drawer.Screen name="ImportStudents" component={ImportStudentsScreen} />
       <Drawer.Screen name="TransferStudent" component={TransferStudentScreen} />
       <Drawer.Screen name="ExportStudentData" component={ExportStudentDataScreen} />
-      <Drawer.Screen name="Attendance" component={AttendanceScreen} />
       <Drawer.Screen name="Fees" component={FeesScreen} />
       <Drawer.Screen name="Timetable" component={TimetableScreen} />
     </Drawer.Navigator>

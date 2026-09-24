@@ -11,6 +11,7 @@ const asyncHandler = require("../utils/asyncHandler");
 const {
   validateNewStudent,
   validateAttendance,
+  validateBulkAttendance,
   validateFees,
   validateTimetable,
 } = require("../utils/validators");
@@ -152,6 +153,58 @@ const addAttendance = asyncHandler(async (req, res) => {
     success: true,
     message: "Attendance recorded successfully",
     data: record,
+  });
+});
+
+/**
+ * @route   POST /api/admin/attendance/bulk
+ * @desc    Bulk mark attendance for multiple students within a database transaction
+ * @access  Private (admin)
+ * @body    { subject, attendanceDate, records: [{ studentId, status }, ...] }
+ */
+const addBulkAttendance = asyncHandler(async (req, res) => {
+  const errors = validateBulkAttendance(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ success: false, message: "Validation failed", errors });
+  }
+
+  const { subject, attendanceDate, records } = req.body;
+
+  const result = await Attendance.createBulk({
+    subject,
+    attendanceDate,
+    records,
+    markedBy: req.user.id,
+  });
+
+  return res.status(201).json({
+    success: true,
+    message: `Attendance marked successfully for ${result.length} student(s)`,
+    count: result.length,
+    data: result,
+  });
+});
+
+/**
+ * @route   GET /api/admin/attendance/low
+ * @desc    List students with attendance below threshold (default: 75%)
+ * @access  Private (admin)
+ * @query   threshold, department, semester
+ */
+const getLowAttendance = asyncHandler(async (req, res) => {
+  const { threshold = 75, department, semester } = req.query;
+
+  const students = await Attendance.findLowAttendance({
+    threshold: parseFloat(threshold),
+    department,
+    semester,
+  });
+
+  return res.status(200).json({
+    success: true,
+    count: students.length,
+    threshold: parseFloat(threshold),
+    data: students,
   });
 });
 
@@ -320,6 +373,8 @@ module.exports = {
   listStudents,
   getStudentById,
   addAttendance,
+  addBulkAttendance,
+  getLowAttendance,
   updateAttendance,
   addFees,
   updateFees,
