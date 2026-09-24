@@ -9,14 +9,6 @@ function delay(ms) {
 
 /**
  * POST /api/auth/admin/login
- *
- * Retries a couple of times on a raw network failure (not on a real
- * 401/validation error) before giving up. This specifically helps right
- * after a fresh app launch / cleared app data, where the very first
- * outgoing request on some Android emulator setups can fail with a
- * generic "Network request failed" while the network interface / adb
- * reverse tunnel is still settling — even though every request after
- * that succeeds fine.
  */
 export async function adminLogin(email, password) {
   let lastError;
@@ -35,6 +27,38 @@ export async function adminLogin(email, password) {
       lastError = error;
       console.error(
         `Admin login attempt ${attempt}/${MAX_ATTEMPTS} failed (network):`,
+        error.message
+      );
+      if (attempt < MAX_ATTEMPTS) {
+        await delay(RETRY_DELAY_MS * attempt);
+      }
+    }
+  }
+
+  throw lastError;
+}
+
+/**
+ * POST /api/auth/student/login
+ * Body: { libraryId: string, password: string }
+ */
+export async function studentLogin(libraryId, password) {
+  let lastError;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/student/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ libraryId, password }),
+      });
+
+      const result = await response.json();
+      return { response, result };
+    } catch (error) {
+      lastError = error;
+      console.error(
+        `Student login attempt ${attempt}/${MAX_ATTEMPTS} failed (network):`,
         error.message
       );
       if (attempt < MAX_ATTEMPTS) {

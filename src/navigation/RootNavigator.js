@@ -9,6 +9,7 @@ import AttendanceScreen from "../screens/AttendanceScreen";
 import FeesScreen from "../screens/FeesScreen";
 import TimetableScreen from "../screens/TimetableScreen";
 import AuthNavigator from "./AuthNavigator";
+import StudentNavigator from "./StudentNavigator";
 import SidebarDrawerContent from "../components/SidebarDrawerContent";
 import { colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
@@ -39,7 +40,7 @@ function AppDrawer() {
 }
 
 export default function RootNavigator() {
-  const { isLoading, isAuthenticated } = useAuth();
+  const { isLoading, isAuthenticated, role } = useAuth();
 
   if (isLoading) {
     return (
@@ -56,5 +57,9 @@ export default function RootNavigator() {
     );
   }
 
-  return isAuthenticated ? <AppDrawer /> : <AuthNavigator />;
+  if (!isAuthenticated) {
+    return <AuthNavigator />;
+  }
+
+  return role === "student" ? <StudentNavigator /> : <AppDrawer />;
 }

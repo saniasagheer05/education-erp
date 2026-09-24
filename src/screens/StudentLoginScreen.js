@@ -14,27 +14,33 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme/colors";
 import { useAuth } from "../context/AuthContext";
-import { adminLogin } from "../api/authApi";
+import { studentLogin } from "../api/authApi";
 
-export default function AdminLoginScreen({ navigation }) {
+export default function StudentLoginScreen({ navigation }) {
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
+  const [libraryId, setLibraryId] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim() || !password) {
-      Alert.alert("Missing details", "Please enter both email and password.");
+    if (!libraryId.trim() || !password) {
+      Alert.alert("Missing details", "Please enter both Library ID and password.");
       return;
     }
 
     setIsLoading(true);
     try {
-      const { response, result } = await adminLogin(email.trim(), password.trim());
+      const { response, result } = await studentLogin(
+        libraryId.trim().toUpperCase(),
+        password.trim()
+      );
 
       if (!response.ok || !result.success) {
-        Alert.alert("Login Failed", result.message || "Invalid email or password.");
+        Alert.alert(
+          "Login Failed",
+          result.message || "Invalid Library ID or password."
+        );
         return;
       }
 
@@ -48,10 +54,10 @@ export default function AdminLoginScreen({ navigation }) {
         );
       }
     } catch (error) {
-      console.error("Admin login network error:", error);
+      console.error("Student login network error:", error);
       Alert.alert(
         "Login Failed",
-        "Could not connect to the server after several attempts. Make sure the backend is running and 'adb reverse tcp:5000 tcp:5000' is active, then try again."
+        "Could not connect to the server. Make sure the backend is running and 'adb reverse tcp:5000 tcp:5000' is active."
       );
     } finally {
       setIsLoading(false);
@@ -66,24 +72,23 @@ export default function AdminLoginScreen({ navigation }) {
       >
         <View style={styles.header}>
           <View style={styles.logoBadge}>
-            <Ionicons name="shield-checkmark-outline" size={32} color={colors.primary} />
+            <Ionicons name="school-outline" size={32} color={colors.primary} />
           </View>
           <Text style={styles.brand}>SVCE ERP</Text>
-          <Text style={styles.subBrand}>Admin & Registrar Portal</Text>
+          <Text style={styles.subBrand}>Student Portal Login</Text>
         </View>
 
         <View style={styles.fieldWrap}>
-          <Text style={styles.label}>Email Address</Text>
+          <Text style={styles.label}>Library ID</Text>
           <TextInput
             style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            placeholder="admin@svce.edu.in"
+            value={libraryId}
+            onChangeText={setLibraryId}
+            placeholder="e.g. LIB-8821"
             placeholderTextColor={colors.placeholder}
-            autoCapitalize="none"
+            autoCapitalize="characters"
             autoCorrect={false}
             spellCheck={false}
-            keyboardType="email-address"
           />
         </View>
 
@@ -115,7 +120,11 @@ export default function AdminLoginScreen({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity style={styles.loginBtn} onPress={handleLogin} disabled={isLoading}>
+        <TouchableOpacity
+          style={styles.loginBtn}
+          onPress={handleLogin}
+          disabled={isLoading}
+        >
           {isLoading ? (
             <ActivityIndicator color="#fff" />
           ) : (
@@ -131,10 +140,10 @@ export default function AdminLoginScreen({ navigation }) {
 
         <TouchableOpacity
           style={styles.switchBtn}
-          onPress={() => navigation.navigate("StudentLogin")}
+          onPress={() => navigation.navigate("AdminLogin")}
         >
-          <Ionicons name="school-outline" size={18} color={colors.primary} />
-          <Text style={styles.switchText}>Student Portal Login</Text>
+          <Ionicons name="shield-checkmark-outline" size={18} color={colors.primary} />
+          <Text style={styles.switchText}>Admin / Staff Portal Login</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
