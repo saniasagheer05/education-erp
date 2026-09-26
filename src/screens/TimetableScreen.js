@@ -66,7 +66,7 @@ export default function TimetableScreen() {
   const handleFindStudent = async () => {
     const trimmed = libraryId.trim();
     if (!trimmed) {
-      Alert.alert("Missing Library ID", "Please enter a Library ID to search.");
+      Alert.alert("Missing Details", "Please enter a Library ID or USN to search.");
       return;
     }
 
@@ -76,12 +76,18 @@ export default function TimetableScreen() {
     resetForm();
     try {
       const students = await listStudents();
+      const normalized = trimmed.toLowerCase();
+      // Accept either identifier - USN is what the rest of the app shows
+      // most prominently (e.g. the Student Registry cards), so a lookup
+      // that only matched Library ID would silently fail for USN input.
       const match = students.find(
-        (s) => (s.library_id || "").toLowerCase() === trimmed.toLowerCase()
+        (s) =>
+          (s.library_id || "").toLowerCase() === normalized ||
+          (s.usn || "").toLowerCase() === normalized
       );
 
       if (!match) {
-        Alert.alert("Not Found", `No student found with Library ID "${trimmed}".`);
+        Alert.alert("Not Found", `No student found with Library ID or USN "${trimmed}".`);
         return;
       }
 
@@ -158,7 +164,7 @@ export default function TimetableScreen() {
             style={[styles.input, { flex: 1, marginBottom: 0 }]}
             value={libraryId}
             onChangeText={setLibraryId}
-            placeholder="Enter Library ID"
+            placeholder="Enter Library ID or USN"
             placeholderTextColor={colors.placeholder}
             autoCapitalize="none"
             editable={!isSearching}

@@ -41,7 +41,10 @@ const create = async ({ name, email, passwordHash, role = "admin" }) => {
   return result.rows[0];
 };
 
+const updatePassword = async (id, passwordHash) => (await query(`UPDATE admins SET password_hash=$1 WHERE id=$2 RETURNING id,email`,[passwordHash,id])).rows[0] || null;
+
 module.exports = {
+  updatePassword,
   findByEmail,
   findById,
   create,

@@ -12,12 +12,14 @@ const TAB_MENU_ITEMS = [
 
 // Items that are standalone drawer screens
 const STANDALONE_MENU_ITEMS = [
+  { key: "Announcements", label: "Announcements", icon: "megaphone-outline" },
   { key: "MarkAttendance", label: "Mark Attendance", icon: "checkmark-done-circle-outline" },
   { key: "LowAttendance", label: "Low Attendance Alert", icon: "alert-circle-outline" },
   { key: "Attendance", label: "Student Attendance Record", icon: "checkbox-outline" },
   { key: "ImportStudents", label: "Import Students", icon: "person-add-outline" },
   { key: "TransferStudent", label: "Transfer Student", icon: "swap-horizontal-outline" },
   { key: "Fees", label: "Fees", icon: "cash-outline" },
+  { key: "Defaulters", label: "Fee Defaulters", icon: "warning-outline" },
   { key: "Timetable", label: "Timetable", icon: "calendar-outline" },
   { key: "ExportStudentData", label: "Export Student Data", icon: "download-outline" },
 ];

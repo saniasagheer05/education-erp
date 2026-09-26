@@ -8,10 +8,7 @@ let poolConfig;
 
 if (process.env.DATABASE_URL) {
   // Production: use connection string with SSL
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  };
+  poolConfig = { connectionString: process.env.DATABASE_URL, ssl: process.env.DB_SSL==="false" ? false : { rejectUnauthorized: false } };
 } else {
   // Local dev: use individual env vars, no SSL
   poolConfig = {

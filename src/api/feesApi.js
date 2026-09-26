@@ -31,3 +31,12 @@ export async function updateFee(id, payload) {
   });
   return result.data;
 }
+
+export async function getDefaulters(params = {}) {
+  const query = new URLSearchParams();
+  if (params.department) query.append("department", params.department);
+  if (params.semester) query.append("semester", params.semester);
+  const qs = query.toString() ? `?${query.toString()}` : "";
+  const result = await authorizedFetch(`/admin/fees/defaulters${qs}`, { method:"GET" });
+  return { data: result.data || [], count: result.count || 0, totalDue: result.totalDue || 0 };
+}

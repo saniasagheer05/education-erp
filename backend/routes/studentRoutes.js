@@ -7,6 +7,7 @@ const {
   getFees,
   getTimetable,
 } = require("../controllers/studentController");
+const { listAnnouncementsStudent } = require("../controllers/announcementController");
 const { verifyToken, requireStudent } = require("../middleware/auth");
 
 // All routes below require a valid student JWT
@@ -25,3 +26,5 @@ router.get("/fees", getFees);
 router.get("/timetable", getTimetable);
 
 module.exports = router;
+
+router.get("/announcements", listAnnouncementsStudent);

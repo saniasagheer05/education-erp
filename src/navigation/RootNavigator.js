@@ -5,6 +5,8 @@ import BottomTabs from "./BottomTabs";
 import ImportStudentsScreen from "../screens/ImportStudentsScreen";
 import TransferStudentScreen from "../screens/TransferStudentScreen";
 import ExportStudentDataScreen from "../screens/ExportStudentDataScreen";
+import AdminAnnouncementsScreen from "../screens/AdminAnnouncementsScreen";
+import DefaultersScreen from "../screens/DefaultersScreen";
 import AttendanceScreen from "../screens/AttendanceScreen";
 import MarkAttendanceScreen from "../screens/MarkAttendanceScreen";
 import LowAttendanceScreen from "../screens/LowAttendanceScreen";
@@ -33,11 +35,13 @@ function AppDrawer() {
       <Drawer.Screen name="MainTabs" component={BottomTabs} />
       <Drawer.Screen name="MarkAttendance" component={MarkAttendanceScreen} />
       <Drawer.Screen name="LowAttendance" component={LowAttendanceScreen} />
+      <Drawer.Screen name="Announcements" component={AdminAnnouncementsScreen} />
       <Drawer.Screen name="Attendance" component={AttendanceScreen} />
       <Drawer.Screen name="ImportStudents" component={ImportStudentsScreen} />
       <Drawer.Screen name="TransferStudent" component={TransferStudentScreen} />
       <Drawer.Screen name="ExportStudentData" component={ExportStudentDataScreen} />
       <Drawer.Screen name="Fees" component={FeesScreen} />
+      <Drawer.Screen name="Defaulters" component={DefaultersScreen} />
       <Drawer.Screen name="Timetable" component={TimetableScreen} />
     </Drawer.Navigator>
   );

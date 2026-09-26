@@ -5,7 +5,7 @@ import DashboardScreen from "../screens/DashboardScreen";
 import StudentRegistryStack from "./StudentRegistryStack";
 import SearchStudentScreen from "../screens/SearchStudentScreen";
 import TasksScreen from "../screens/TasksScreen";
-import SettingsScreen from "../screens/SettingsScreen";
+import SettingsStack from "./SettingsStack";
 import { colors } from "../theme/colors";
 
 const Tab = createBottomTabNavigator();
@@ -45,7 +45,7 @@ export default function BottomTabs() {
       <Tab.Screen name="Students" component={StudentRegistryStack} />
       <Tab.Screen name="Search" component={SearchStudentScreen} />
       <Tab.Screen name="Tasks" component={TasksScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
+      <Tab.Screen name="Settings" component={SettingsStack} />
     </Tab.Navigator>
   );
 }

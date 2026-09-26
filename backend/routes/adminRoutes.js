@@ -15,6 +15,13 @@ const {
   addTimetable,
   updateTimetable,
 } = require("../controllers/adminController");
+const {
+  getStats, getDefaulters, getStudentFeesAdmin, getStudentAttendanceAdmin, getStudentTimetableAdmin,
+} = require("../controllers/adminReportController");
+const {
+  createAnnouncement, listAnnouncementsAdmin, deleteAnnouncement,
+} = require("../controllers/announcementController");
+const { changePassword } = require("../controllers/adminAccountController");
 const { verifyToken, requireAdmin } = require("../middleware/auth");
 
 // All routes below require a valid admin JWT
@@ -61,3 +68,18 @@ router.post("/timetable", addTimetable);
 router.put("/timetable/:id", updateTimetable);
 
 module.exports = router;
+
+// ---------- Reports / dashboard ----------
+router.get("/students/:id/fees", getStudentFeesAdmin);
+router.get("/students/:id/attendance", getStudentAttendanceAdmin);
+router.get("/students/:id/timetable", getStudentTimetableAdmin);
+router.get("/stats", getStats);
+router.get("/fees/defaulters", getDefaulters);
+
+// ---------- Announcements ----------
+router.post("/announcements", createAnnouncement);
+router.get("/announcements", listAnnouncementsAdmin);
+router.delete("/announcements/:id", deleteAnnouncement);
+
+// ---------- Account ----------
+router.put("/me/password", changePassword);

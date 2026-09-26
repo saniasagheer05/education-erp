@@ -175,6 +175,23 @@ const validateTimetable = (body) => {
   return errors;
 };
 
+const validateAnnouncement = (body) => {
+  const errors=[];
+  if (isEmpty(body.title)) errors.push("title is required"); else if (String(body.title).trim().length>150) errors.push("title must be 150 characters or fewer");
+  if (isEmpty(body.body)) errors.push("body is required"); else if (String(body.body).trim().length>2000) errors.push("body must be 2000 characters or fewer");
+  return errors;
+};
+const validatePushToken = (body, isExpoPushToken) => {
+  const errors=[]; if (isEmpty(body.token)) errors.push("token is required"); else if (!isExpoPushToken(String(body.token).trim())) errors.push("token must be a valid Expo push token");
+  return errors;
+};
+const validateChangePassword = (body) => {
+  const errors=[];
+  if (isEmpty(body.currentPassword)) errors.push("currentPassword is required");
+  if (isEmpty(body.newPassword)) errors.push("newPassword is required"); else if (String(body.newPassword).length<8) errors.push("newPassword must be at least 8 characters");
+  return errors;
+};
+
 module.exports = {
   isEmpty,
   isValidEmail,
@@ -185,4 +202,7 @@ module.exports = {
   validateBulkAttendance,
   validateFees,
   validateTimetable,
+  validateAnnouncement,
+  validatePushToken,
+  validateChangePassword,
 };

@@ -75,7 +75,18 @@ const update = async (id, { totalAmount, paidAmount, dueDate, status }) => {
   return result.rows[0] || null;
 };
 
+const findDefaulters = async ({ department, semester } = {}) => {
+  const conditions=["f.due_amount > 0","(f.status='Overdue' OR (f.due_date IS NOT NULL AND f.due_date < CURRENT_DATE))"];
+  const values=[]; let index=1;
+  if (department) { conditions.push(`s.department = $${index++}`); values.push(department); }
+  if (semester) { conditions.push(`f.semester = $${index++}`); values.push(parseInt(semester,10)); }
+  const result = await query(`SELECT f.id,f.student_id,f.semester,f.academic_year,f.total_amount,f.paid_amount,f.due_amount,f.due_date,f.status,s.library_id,s.first_name,s.last_name,s.department,s.section
+    FROM fees f JOIN students s ON s.id=f.student_id WHERE ${conditions.join(" AND ")} ORDER BY f.due_amount DESC, s.first_name`, values);
+  return result.rows;
+};
+
 module.exports = {
+  findDefaulters,
   findByStudentId,
   findById,
   create,
