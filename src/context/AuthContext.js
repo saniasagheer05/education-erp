@@ -6,6 +6,7 @@ import {
   removeAuth,
   saveToken,
   removeToken,
+  removeUser,
   saveLastPortal,
   getLastPortal,
 } from "../utils/authStorage";

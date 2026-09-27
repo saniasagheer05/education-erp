@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors } from "../theme/colors";
+import { useAuth } from "../context/AuthContext";
 
 // Items that live inside the bottom tab navigator ("MainTabs")
 const TAB_MENU_ITEMS = [
@@ -26,6 +27,7 @@ const STANDALONE_MENU_ITEMS = [
 
 export default function SidebarDrawerContent(props) {
   const { navigation, state } = props;
+  const { logout, user } = useAuth();
   const activeRouteName = state.routes[state.index]?.name;
 
   // Determine which tab is active when we're on the MainTabs route
@@ -34,6 +36,20 @@ export default function SidebarDrawerContent(props) {
     activeRouteName === "MainTabs" && mainTabsRoute?.state
       ? mainTabsRoute.state.routes[mainTabsRoute.state.index]?.name
       : null;
+
+  const handleLogout = () => {
+    if (Platform.OS === "web") {
+      if (typeof window !== "undefined" && window.confirm("Are you sure you want to log out?")) {
+        logout();
+      }
+      return;
+    }
+
+    Alert.alert("Log Out", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Log Out", style: "destructive", onPress: logout },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
@@ -117,10 +133,18 @@ export default function SidebarDrawerContent(props) {
           source={{ uri: "https://i.pravatar.cc/100?img=12" }}
           style={styles.profileAvatar}
         />
-        <View>
-          <Text style={styles.profileName}>Admin User</Text>
-          <Text style={styles.profileRole}>Office of Registrar</Text>
+        <View style={styles.profileInfo}>
+          <Text style={styles.profileName}>{user?.name || "Admin User"}</Text>
+          <Text style={styles.profileRole}>{user?.email || "Office of Registrar"}</Text>
         </View>
+        <TouchableOpacity
+          onPress={handleLogout}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          style={styles.logoutBtn}
+          accessibilityLabel="Log out"
+        >
+          <Ionicons name="log-out-outline" size={20} color={colors.danger} />
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -201,5 +225,11 @@ const styles = StyleSheet.create({
   profileRole: {
     fontSize: 11,
     color: colors.textSecondary,
+  },
+  profileInfo: {
+    flex: 1,
+  },
+  logoutBtn: {
+    padding: 6,
   },
 });

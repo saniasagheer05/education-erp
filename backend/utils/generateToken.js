@@ -2,7 +2,7 @@
 // Wraps jsonwebtoken to produce a signed JWT carrying the user's id and role.
 
 const jwt = require("jsonwebtoken");
-require("dotenv").config();
+const { JWT_SECRET, JWT_EXPIRES_IN } = require("../config/jwt");
 
 /**
  * Generate a signed JWT for a student or admin.
@@ -10,8 +10,13 @@ require("dotenv").config();
  * @returns {string} signed JWT
  */
 const generateToken = (payload) => {
-  return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN || "7d",
+  const secret = JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET environment variable is not defined");
+  }
+
+  return jwt.sign(payload, secret, {
+    expiresIn: JWT_EXPIRES_IN || "7d",
   });
 };
 

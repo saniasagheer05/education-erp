@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { colors, statusStyles } from "../../theme/colors";
@@ -46,6 +47,16 @@ export default function StudentProfileScreen() {
   };
 
   const handleLogout = () => {
+    if (Platform.OS === "web") {
+      if (
+        typeof window !== "undefined" &&
+        window.confirm("Are you sure you want to sign out of your student account?")
+      ) {
+        logout();
+      }
+      return;
+    }
+
     Alert.alert("Sign Out", "Are you sure you want to sign out of your student account?", [
       { text: "Cancel", style: "cancel" },
       { text: "Sign Out", style: "destructive", onPress: logout },

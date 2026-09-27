@@ -48,7 +48,7 @@ function AppDrawer() {
 }
 
 export default function RootNavigator() {
-  const { isLoading, isAuthenticated, role } = useAuth();
+  const { isLoading, isAuthenticated, role, lastPortal } = useAuth();
 
   if (isLoading) {
     return (
@@ -66,7 +66,7 @@ export default function RootNavigator() {
   }
 
   if (!isAuthenticated) {
-    return <AuthNavigator />;
+    return <AuthNavigator key={lastPortal || "auth"} />;
   }
 
   return role === "student" ? <StudentNavigator /> : <AppDrawer />;

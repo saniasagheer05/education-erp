@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, Alert, Platform } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -30,6 +30,12 @@ export default function SettingsScreen() {
   };
 
   const confirmLogout = () => {
+    if (Platform.OS === "web") {
+      if (typeof window !== "undefined" && window.confirm("Are you sure you want to log out?")) {
+        handleLogout();
+      }
+      return;
+    }
     Alert.alert("Log Out", "Are you sure you want to log out?", [
       { text: "Cancel", style: "cancel" },
       { text: "Log Out", style: "destructive", onPress: handleLogout },

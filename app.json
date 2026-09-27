@@ -15,9 +15,14 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.svce.erp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "permissions": [
+        "INTERNET"
+      ]
     },
     "web": {
       "bundler": "metro"
